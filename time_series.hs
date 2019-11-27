@@ -38,7 +38,6 @@ file3 =
   , (24, 215.1)
   , (25, 218.7)
   ]
-
 file4 :: [(Int, Double)]
 file4 =
   [ (26, 218.8)
@@ -54,3 +53,5 @@ file4 =
   , (36, 220.6)
   ]
 
+-- types
+data TS a = TS [Int] [Maybe a]
