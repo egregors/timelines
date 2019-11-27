@@ -62,3 +62,14 @@ createTS times values = TS completeTimes extendedValues
   completeTimes  = [minimum times .. maximum times]
   timeValueMap   = Map.fromList (zip times values)
   extendedValues = map (\v -> Map.lookup v timeValueMap) completeTimes
+
+fileToTS :: [(Int, a)] -> TS a
+fileToTS tvPairs = createTS times values where (times, values) = unzip tvPairs
+
+showTVPair :: Show a => Int -> Maybe a -> String
+showTVPair time (Just value) = mconcat [show time, "|", show value, "\n"]
+showTVPair time Nothing      = mconcat [show time, "|NA\n"]
+
+instance Show a => Show (TS a) where
+  show (TS times values) = mconcat rows
+    where rows = zipWith showTVPair times values
