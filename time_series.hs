@@ -55,3 +55,10 @@ file4 =
 
 -- types
 data TS a = TS [Int] [Maybe a]
+
+createTS :: [Int] -> [a] -> TS a
+createTS times values = TS completeTimes extendedValues
+ where
+  completeTimes  = [minimum times .. maximum times]
+  timeValueMap   = Map.fromList (zip times values)
+  extendedValues = map (\v -> Map.lookup v timeValueMap) completeTimes
