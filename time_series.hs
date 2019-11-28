@@ -70,6 +70,9 @@ instance Show a => Show (TS a) where
   show (TS times values) = mconcat rows
     where rows = zipWith showTVPair times values
 
+instance Semigroup (TS a) where
+  (<>) = combineTS
+
 -- funcs
 createTS :: [Int] -> [a] -> TS a
 createTS times values = TS completeTimes extendedValues
@@ -85,3 +88,17 @@ showTVPair :: Show a => Int -> Maybe a -> String
 showTVPair time (Just value) = mconcat [show time, "|", show value, "\n"]
 showTVPair time Nothing      = mconcat [show time, "|NA\n"]
 
+insertMaybePair :: Ord k => Map.Map k v -> (k, Maybe v) -> Map.Map k v
+insertMaybePair myMap (_  , Nothing   ) = myMap
+insertMaybePair myMap (key, Just value) = Map.insert key value myMap
+
+combineTS :: TS a -> TS a -> TS a
+combineTS (TS [] []) ts2        = ts2
+combineTS ts1        (TS [] []) = ts1
+combineTS (TS t1 v1) (TS t2 v2) = TS completeTimes combinedValues
+ where
+  bothTimes      = mconcat [t1, t2]
+  completeTimes  = [minimum bothTimes .. maximum bothTimes]
+  tvMap          = foldl insertMaybePair Map.empty (zip t1 v1)
+  updatedMap     = foldl insertMaybePair tvMap (zip t2 v2)
+  combinedValues = map (\v -> Map.lookup v updatedMap) completeTimes
