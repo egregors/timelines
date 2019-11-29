@@ -73,6 +73,10 @@ instance Show a => Show (TS a) where
 instance Semigroup (TS a) where
   (<>) = combineTS
 
+instance Monoid (TS a) where
+  mempty  = TS [] []
+  mappend = (<>)
+
 -- funcs
 createTS :: [Int] -> [a] -> TS a
 createTS times values = TS completeTimes extendedValues
@@ -102,3 +106,6 @@ combineTS (TS t1 v1) (TS t2 v2) = TS completeTimes combinedValues
   tvMap          = foldl insertMaybePair Map.empty (zip t1 v1)
   updatedMap     = foldl insertMaybePair tvMap (zip t2 v2)
   combinedValues = map (\v -> Map.lookup v updatedMap) completeTimes
+
+tsAll :: TS Double
+tsAll = mconcat [ts1, ts2, ts3, ts4]
